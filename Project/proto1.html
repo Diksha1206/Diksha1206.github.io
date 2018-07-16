@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="project.js"></script>
+    <script src="jquery-1.10.2.min.js"></script>
+</head>
+<body>
+
+    <h1>Prototype 1</h1>
+    <div class="form-group">
+
+        <label class="col-md-3 control-label">Select Company: </label>
+        <div id="divAuth " style="width: 20%">
+            <select id="det" data-placeholder="Select Workspace" style="width: 100%" class="chzn-select"></select>
+        </div>
+    </div>
+    <br />
+    <label>Rates:</label>
+    <br />
+    <div class="form-group">
+
+        <label class="col-md-3 control-label">From: </label>
+        <div id="divAuth " style="width: 5%">
+            <select id="det" data-placeholder="Select Workspace" style="width: 100%" class="chzn-select">
+                <option value="volvo">1%</option>
+                <option value="volvo">2%</option>
+                <option value="saab">4%</option>
+                <option value="mercedes">5%</option>
+                <option value="audi">7%</option>
+                <option value="audi">8%</option>
+                <option value="audi">9%</option>
+                <option value="audi">10%</option>
+                <option value="audi">11%</option>
+                <option value="audi">12%</option>
+
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+
+        <label class="col-md-3 control-label">To: </label>
+        <div id="divAuth " style="width: 5%">
+            <select id="det" data-placeholder="Select Workspace" style="width: 100%" class="chzn-select">
+                <option value="volvo">1%</option>
+                <option value="volvo">2%</option>
+                <option value="saab">4%</option>
+                <option value="mercedes">5%</option>
+                <option value="audi">7%</option>
+                <option value="audi">8%</option>
+                <option value="audi">9%</option>
+                <option value="audi">10%</option>
+                <option value="audi">11%</option>
+                <option value="audi">12%</option>
+
+            </select>
+        </div>
+    </div>
+    <br />
+    <br />
+    <script>
+
+
+
+        //My dataset has 7195 companies
+        //To extract the names of all companies I have created a csv file. That CSV file has name of companies(files) that I have in dataset.
+
+        //How I have extracted?
+
+        //Command prompt -> navigate to dataset folde -> dir > companies.txt
+
+        //So the companies.txt file has name of all the file that I have in dataset and those file names are nothing but company names
+
+        var comp;
+        var option = '<option value="0">--select --</option>';
+        d3.csv("companies.csv", function (data) {
+            //var z = "a.us.txt";
+            //console.log(data.z);
+            debugger;
+            for (var i = 0; i < data.length; i++) {
+                console.log(data[i].companies);
+                option += '<option Value="' + data[i].companies + '">' + data[i].companies + '</option>'
+            }
+
+            $('#det').html(option);
+
+        });
+        var margin = { top: 20, right: 20, bottom: 50, left: 70 },
+            width = 960 - margin.left - margin.right,
+            
+            height = 500 - margin.top - margin.bottom;
+
+        // parse the date / time
+        var parseTime = d3.timeParse("%d-%b-%y");
+
+        // set the ranges
+        var x = d3.scaleTime().range([0, width]);
+        var y = d3.scaleLinear().range([height, 0]);
+
+       
+        var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform",
+                  "translate(" + margin.left + "," + margin.top + ")");
+
+
+        // Add the x Axis
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        // text label for the x axis
+        svg.append("text")
+            .attr("transform",
+                  "translate(" + (width / 2) + " ," +
+                                 (height + margin.top + 20) + ")")
+            .style("text-anchor", "middle")
+            .text("Date");
+
+        svg.append("text").attr("transform","translate(" + (width-100 ) + " ," +(height + margin.top -450) + ")")
+        .style("text-anchor", "middle")
+        .text("Name of the Company: Apple Inc");
+        // Name of the company is to be made dynamic according to selection.
+
+        svg.append("text").attr("transform", "translate(" + (width - 170) + " ," + (height + margin.top - 400) + ")")
+        .style("text-anchor", "middle")
+        .text("Year: 2012");
+        // Year is to be made dynamic
+
+        // Add the y Axis
+        svg.append("g")
+            .call(d3.axisLeft(y));
+
+        // text label for the y axis
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left)
+            .attr("x", 0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Closing value");
+
+        
+        // Get the data
+
+
+        d3.csv("data.csv.xlsx", function (error, data) {
+            if (error) throw error;
+
+        });
+
+    </script>
+</body>
+</html>

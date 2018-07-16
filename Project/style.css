@@ -1,0 +1,34 @@
+﻿body {
+}
+
+.blue{          /*Class for setting the color of text blue*/
+    color:blue;
+    font-weight: normal;
+}
+
+#course{
+    font-style:italic;
+    font-weight: normal;
+}
+
+#assn2{            /*Setting the color of Assignment 1 as green by using its id*/
+    color:green;
+    font-weight: normal;
+}
+
+table {
+    font-family: arial, sans-serif;
+    /*border-collapse: collapse;*/
+    width: 50%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+/*tr:nth-child(even) {
+    background-color: #dddddd;
+}*/
+
