@@ -1,14 +1,9 @@
 ﻿$(document).ready(function () {                                                 // This runs first on loading the js
-
-
-    //alert("In document ready of BrushAndZoom");
+    
     var option = '<option value="0">--select --</option>';                  
     d3.csv("companies.csv", function (data) {                                   // Appending companies to the drop down
-        //var z = "a.us.txt";
-        //console.log(data.z);
-
-        for (var i = 0; i < data.length; i++) {
-            //  console.log(data[i].companies);
+    
+        for (var i = 0; i < data.length; i++) {            
             option += '<option Value="' + data[i].companies + '">' + data[i].companies + '</option>'
         }
 
@@ -25,6 +20,7 @@ var xaxis, xaxis2, yaxis;
 var brushing, d3zoom, Chartarea, Chartarea2, focus, context;
 var link = "https://raw.githubusercontent.com/Diksha1206/Stocks-Viz/master/Data/";              //Common part of link
 var dropdownsel;
+var Company1;
 
 function createLineChart() {
 
@@ -85,30 +81,87 @@ function createLineChart() {
 
 
 $('select[name="Companydropdown"]').change(function () {                // On selecting value from thr drop down
-    //alert("Implemented On change");
-
+    
     document.getElementById("chart").innerHTML = "";                // Clearing out all the values of previous selection
     createLineChart();                                              //Creating SVG elements and axis
-    dropdownsel = $(this).val();                                    //Getting the value of drop down selection
-    //alert(dropdownsel);
-    var linksel = link + dropdownsel;                               //link conatins common part of the link and dropvalue contains the selected company so appending selected company to the link which creates a complete link of selected company
-    //alert(linksel);
+    dropdownsel = $(this).val();                                    //Getting the value of drop down selection    
+    var linksel = link + dropdownsel;                               //link conatins common part of the link and dropvalue contains the selected company so appending selected company to the link which creates a complete link of selected company    
+    linksel = linksel + ".us.txt";  
+    dropvalue = $(this).val();                                         //Getting the value of drop down selection 
+         
+    var selectedLink = link + dropvalue;                              //link conatins common part of the link and dropvalue contains the selected company so appending selected company to the link which creates a complete link of selected company
+    var index = dropdownsel.indexOf(".");    
+    Company = dropvalue;    
+    // API start 
+    
+    apiCall();
+    var getDate;
+
+    function getdate() {
+        getDate = js_yyyy_mm_dd_hh_mm_ss();
+    }
 
 
-    // Get the data again
-    //d3.csv("data-alt.csv", function (error, data) {                     // Getting the data of selected link
-    //    data.forEach(function (d) {
-    //        d.date = parseDate(d.date);
-    //        d.close = +d.close;
-    //    });
+    function js_yyyy_mm_dd_hh_mm_ss() {
 
-    //    // Scale the range of the data again 
-    //    x.domain(d3.extent(data, function (d) { return d.Date; }));
-    //    y.domain([0, d3.max(data, function (d) { return d.Close; })]);
+        now = new Date();
+        year = "" + now.getFullYear();
+        month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
+        day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
+        hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
+        minute = "" + now.getMinutes();
+        if (minute.length == 1) {
+            minute = minute - 1;
+            minute = "0" + minute;
+        }
+        else {
+            minute = minute - 1;
+        }        
+        return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + "00";
+    }
+
+
+    function apiCall() {        
+        getdate();
+        // Put the name of the selected company
+        var xyz = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + Company + "&interval=1min&apikey=E9MWSWUNDXUEK6X9";
+        
+        var obj = fetch(xyz, {
+            method: 'get'
+        })
+            .then(response => response.json())
+            .then(function (jsonData) {
+                
+                // Use this between 9:30 to 4pm
+                openvalue = ((jsonData["Time Series (1min)"])["" + getDate + ""])["1. open"];
+                highValue = ((jsonData["Time Series (1min)"])["" + getDate + ""])["2. high"];
+                lowvalue = ((jsonData["Time Series (1min)"])["" + getDate + ""])["3. low"];
+                closeValue = ((jsonData["Time Series (1min)"])["" + getDate + ""])["4. close"];
+                volumeValue = ((jsonData["Time Series (1min)"])["" + getDate + ""])["5. volume"];
+                
+                document.getElementById("Openlblcurr1").innerHTML = openvalue;
+                document.getElementById("Highlblcurr1").innerHTML = highValue;
+                document.getElementById("Lowlblcurr1").innerHTML = lowvalue;
+                document.getElementById("Closelblcurr1").innerHTML = closeValue;
+                document.getElementById("Volumelblcurr1").innerHTML = volumeValue;
+                document.getElementById("Datelblcurr1").innerHTML = getDate;
+
+                // Calling obj every 1000 ms
 
 
 
-    //});
+            })
+
+
+
+        setTimeout(apiCall, 60000);
+
+
+    }
+
+
+    //API end
+    
 
     d3.csv(linksel, type, function (error, data) {                  // Getting the data of selected link
         if (error) throw error;

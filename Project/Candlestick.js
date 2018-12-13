@@ -1,5 +1,5 @@
 ﻿$(document).ready(function () {                                             // This runs first on loading the js
-    debugger;
+    
     //alert("In document");
     var option = '<option value="0">--select --</option>';
     d3.csv("companies.csv", function (data) {                                // Appending companies to the drop down
@@ -87,9 +87,7 @@ function createCandlestick() {
             .attr("class", "pane")
             .attr("width", width)
             .attr("height", height)
-            .call(d3zoom);
-
-
+            .call(d3zoom);    
 }
 
 
@@ -97,9 +95,69 @@ $('select[name="Companydropdown"]').change(function () {                    // O
 
     document.getElementById("candle").innerHTML = "";                        // Clearing out all the values of previous selection
     selectedcompany = $(this).val();                                        //Getting the value of drop down selection
-    var linktogo = link + selectedcompany;                                  //link conatins common part of the link and dropvalue contains the selected company so appending selected company to the link which creates a complete link of selected company
-    //alert(linktogo);
+    var linktogo = link + selectedcompany;                                  //link conatins common part of the link and dropvalue contains the selected company so appending selected company to the link which creates a complete link of selected company    
+    linktogo = linktogo + ".us.txt";
+    var index = selectedcompany.indexOf(".");    
+    Company = selectedcompany.substring(0, index);    
 
+    // API start     
+    apiCall();
+    var getDate;
+
+    function getdate() {
+        getDate = js_yyyy_mm_dd_hh_mm_ss();
+    }
+
+    function js_yyyy_mm_dd_hh_mm_ss() {
+
+        now = new Date();
+        year = "" + now.getFullYear();
+        month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
+        day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
+        hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
+        minute = "" + now.getMinutes();
+        if (minute.length == 1) {
+            minute = minute - 1;
+            minute = "0" + minute;
+        }
+        else {
+            minute = minute - 1;
+        }
+        return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + "00";
+    }
+
+
+    function apiCall() {
+       
+        getdate();       
+        var xyz = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + Company + "&interval=1min&apikey=E9MWSWUNDXUEK6X9";
+        var obj = fetch(xyz, {
+            method: 'get'
+        })
+            .then(response => response.json())
+            .then(function (jsonData) {
+                openvalue = ((jsonData["Time Series (1min)"])["" + getDate + ""])["1. open"];
+                highValue = ((jsonData["Time Series (1min)"])["" + getDate + ""])["2. high"];
+                lowvalue = ((jsonData["Time Series (1min)"])["" + getDate + ""])["3. low"];
+                closeValue = ((jsonData["Time Series (1min)"])["" + getDate + ""])["4. close"];
+                volumeValue = ((jsonData["Time Series (1min)"])["" + getDate + ""])["5. volume"];
+                document.getElementById("Openlblcurr2").innerHTML = openvalue;
+                document.getElementById("Highlblcurr2").innerHTML = highValue;
+                document.getElementById("Lowlblcurr2").innerHTML = lowvalue;
+                document.getElementById("Closelblcurr2").innerHTML = closeValue;
+                document.getElementById("Volumelblcurr2").innerHTML = volumeValue;
+                document.getElementById("Datelblcurr2").innerHTML = getDate;
+
+                // Calling obj every 1000 ms
+                
+            })
+        
+        setTimeout(apiCall, 60000);        
+    }
+
+
+    //API end
+    
     createCandlestick();                                            //Creating SVG elements and axis
 
     var result = d3.csv(linktogo, function (error, data) {          // Getting the data of selected link

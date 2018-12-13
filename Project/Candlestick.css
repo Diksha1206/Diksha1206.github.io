@@ -35,3 +35,13 @@
         width: 300px;
         margin: auto;
     }
+
+.navbar1 {
+    overflow: hidden;
+    background-color: white;
+    position: fixed;
+    top: 0;
+    width: 450px;
+    margin-left: 950px;
+    margin-top: 50px;
+}
